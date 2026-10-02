@@ -1,3 +1,5 @@
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id(libs.plugins.android.application.get().pluginId)
@@ -6,6 +8,20 @@ plugins {
     id(libs.plugins.kapt.get().pluginId)
     id(libs.plugins.androidx.navigation.get().pluginId)
     id(libs.plugins.ktlint.jlleitschuh.get().pluginId)
+}
+
+val secrets = Properties().apply {
+    val secretsFile = rootProject.file("secrets.properties")
+    if (secretsFile.exists()) {
+        secretsFile.inputStream().use { load(it) }
+    }
+}
+
+fun secret(name: String): String = secrets.getProperty(name)?.trim().orEmpty()
+
+fun asBuildConfigString(value: String): String {
+    val escaped = value.replace("\\", "\\\\").replace("\"", "\\\"")
+    return "\"$escaped\""
 }
 
 android {
@@ -23,6 +39,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField(
+            "String",
+            "MAPBOX_TOKEN",
+            asBuildConfigString(secret("MAPBOX_TOKEN")),
+        )
     }
 
     buildTypes {
@@ -47,6 +69,7 @@ android {
     buildFeatures {
         compose = true
         viewBinding = true
+        buildConfig = true
     }
 
     composeOptions {

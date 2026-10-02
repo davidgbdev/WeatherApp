@@ -1,5 +1,6 @@
 package com.gonzalez.blanchard.interceptor
 
+import com.gonzalez.blanchard.remotedatasource.BuildConfig
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -24,7 +25,5 @@ class AccessTokenInterceptor @Inject constructor() : Interceptor {
         return chain.proceed(newRequest)
     }
     
-    private fun getAccessToken(): String {
-        return "ebf86ba57bf73138518c001c0f35129c"
-    }
+    private fun getAccessToken(): String = BuildConfig.WEATHERSTACK_ACCESS_KEY
 }
